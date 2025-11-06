@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test API</title>
+</head>
+<body>
+    <h1>Test Match Summary</h1>
+    <button onclick="testAPI()">Test Match 740693</button>
+    <pre id="result"></pre>
+    
+    <script>
+        async function testAPI() {
+            const resultEl = document.getElementById('result');
+            resultEl.textContent = 'Loading...';
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/v1/football/match/740693/summary');
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    resultEl.textContent = `Error ${response.status}: ${errorText}`;
+                    return;
+                }
+                
+                const data = await response.json();
+                resultEl.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultEl.textContent = `Exception: ${error.message}\n${error.stack}`;
+            }
+        }
+    </script>
+</body>
+</html>
