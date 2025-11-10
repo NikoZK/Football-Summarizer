@@ -64,8 +64,6 @@ public class PlayerService {
         JsonNode rosters = root.path("rosters");
 
         if (rosters.isArray() && rosters.size() > 0) {
-            Random random = new Random(fixtureId.hashCode());
-
             for (JsonNode rosterTeam : rosters) {
                 String teamName = rosterTeam.path("team").path("displayName").asText();
                 JsonNode roster = rosterTeam.path("roster");
@@ -76,24 +74,38 @@ public class PlayerService {
                         String name = athlete.path("displayName").asText();
                         String position = player.path("position").path("displayName").asText("Unknown");
                         boolean starter = player.path("starter").asBoolean(false);
-                        boolean active = player.path("active").asBoolean(false);
+                        boolean active = player.path("active").asBoolean(true);
 
                         if (name.isEmpty()) continue;
 
-                        double baseRating = 50.0 + random.nextDouble() * 40.0;
-                        if (starter) baseRating += 5.0;
-                        if (!active) baseRating -= 10.0;
+                        // Use minutes if available, fallback to 0
+                        int minutes = player.path("stats").path("minutes").asInt(starter ? 90 : 0);
 
+                        // Base rating starts with minutes proportion
+                        double rating = 40.0 + (minutes / 90.0) * 40.0;
+
+                        // Starter bonus
+                        if (starter) rating += 5.0;
+
+                        // Active penalty
+                        if (!active) rating -= 10.0;
+
+                        // Position-based small adjustment
                         if (position.contains("Forward") || position.contains("Striker")) {
-                            baseRating += random.nextDouble() * 5.0 - 2.5;
+                            rating += 5.0; // reward attacking players
+                        } else if (position.contains("Defender") || position.contains("GK")) {
+                            rating += 2.0; // small bonus for defensive contribution
                         }
+
+                        // Clamp rating 40-95
+                        rating = Math.max(40.0, Math.min(95.0, rating));
 
                         PlayerPerformanceResponse.PlayerInfo playerInfo = new PlayerPerformanceResponse.PlayerInfo();
                         playerInfo.setName(name);
                         playerInfo.setTeam(teamName);
-                        playerInfo.setRating(Math.max(40.0, Math.min(95.0, baseRating)));
                         playerInfo.setPosition(position);
-                        playerInfo.setMinutes(starter ? 90 : (active ? random.nextInt(60) + 10 : 0));
+                        playerInfo.setMinutes(minutes);
+                        playerInfo.setRating(rating);
 
                         allPlayers.add(playerInfo);
                     } catch (Exception e) {
@@ -105,6 +117,7 @@ public class PlayerService {
 
         return allPlayers;
     }
+
 
     private List<PlayerPerformanceResponse.PlayerInfo> generateMockPlayers() {
         List<PlayerPerformanceResponse.PlayerInfo> players = new ArrayList<>();
