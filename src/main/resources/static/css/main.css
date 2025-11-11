@@ -349,6 +349,7 @@ body {
     padding: 1.5rem;
     border-radius: 10px;
     margin-bottom: 1rem;
+    text-align: center;
 }
 
 .preview-card h5 {
@@ -360,6 +361,7 @@ body {
 .preview-card p {
     margin: 0;
     color: #666;
+
 }
 
 .preview-card .badge {
@@ -398,6 +400,24 @@ body {
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
 }
 
+
+/* Gælder på alle skærmstørrelser */
+.stat-group-wrapper.attacking-group,
+.stat-group-wrapper.defensive-group,
+.stat-group-wrapper.discipline-group {
+    margin-top: 10px;
+    padding: 10px 12px;      /* lidt luft rundt om gruppen */
+    outline: #333333 1px solid; /* hvis du stadig vil se kanten */
+}
+
+.stat-group-title {
+    display: flex;
+    justify-content: center;  /* centrer ikon + tekst */
+    align-items: center;
+    text-align: center;
+    margin-bottom: 8px;       /* lidt luft ned til stats */
+}
+
 @media (max-width: 768px) {
     .matches-grid {
         grid-template-columns: 1fr;
@@ -419,4 +439,78 @@ body {
     .team-score {
         font-size: 1.5rem;
     }
+
+    .stats-header-line {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .stats-score {
+        font-size: 1.3rem;
+        padding: 0 0.5rem;
+    }
+
+    .stats-board {
+        border-radius: 0.75rem;
+        background: #f8f9fa;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.86rem;
+    }
+
+    .stats-row {
+        display: grid;
+        grid-template-columns: 1.4fr 0.8fr 0.8fr;
+        align-items: center;
+        padding: 2px 0;
+    }
+
+    .stats-row-head {
+        font-weight: 600;
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 4px;
+        padding-bottom: 4px;
+    }
+
+    .stats-possession {
+        font-weight: 500;
+        background: #ffffff;
+        border-radius: 0.5rem;
+        padding: 3px 6px;
+        margin-bottom: 4px;
+    }
+
+    .stats-group-title {
+        margin-top: 4px;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        opacity: 0.7;
+        border-top: 1px solid #e1e4e8;
+        padding-top: 3px;
+    }
+
+    .stats-label {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .stats-val {
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .home-stat {
+        font-weight: 500;
+    }
+
+    .away-stat {
+        font-weight: 500;
+    }
+
+
+
 }
