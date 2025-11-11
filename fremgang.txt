@@ -1,9 +1,11 @@
 exG calculation fix
 
-Team Form fix
+Team Form fix 🥬🥬
 
-Top 3 best/worst players fix
+Top 3 best/worst players fix. = Virker fremragende nu, AI summary hallucinerer ikke længere. Mini justeringer kan laves, så som CB's får en lille smule højere penalty for goals conceeded og gule/røde kort penalty.
 
 Venue fix 🥬🥬
 
 Tilføj flere ligaer + CL
+
+Flere relevante stats(total shots, saves, total tackles, effective tackles, interceptions, woncorners. = Implementeret dejligt, kun css skal fixes.

@@ -148,44 +148,72 @@ public class MatchService {
         MatchSummaryResponse.MatchStatistics stats = new MatchSummaryResponse.MatchStatistics();
 
         JsonNode boxscore = root.path("boxscore");
-        if (boxscore.has("teams")) {
-            JsonNode teams = boxscore.path("teams");
-            if (teams.isArray() && teams.size() >= 2) {
-                JsonNode homeStats = null;
-                JsonNode awayStats = null;
+        if (!boxscore.has("teams")) {
+            return stats;
+        }
 
-                for (JsonNode team : teams) {
-                    if (team.path("homeAway").asText().equals("home")) {
-                        homeStats = team;
-                    } else {
-                        awayStats = team;
-                    }
-                }
+        JsonNode teams = boxscore.path("teams");
+        if (!teams.isArray() || teams.size() < 2) {
+            return stats;
+        }
 
-                if (homeStats != null && awayStats != null) {
-                    stats.setPossessionHome(espnService.extractStat(homeStats, "possessionPct"));
-                    stats.setPossessionAway(espnService.extractStat(awayStats, "possessionPct"));
+        JsonNode homeTeamNode = null;
+        JsonNode awayTeamNode = null;
 
-                    int shotsOnTargetHome = espnService.extractStatInt(homeStats, "shotsOnTarget");
-                    int shotsOnTargetAway = espnService.extractStatInt(awayStats, "shotsOnTarget");
-                    stats.setShotsOnGoalHome(shotsOnTargetHome);
-                    stats.setShotsOnGoalAway(shotsOnTargetAway);
-
-                    stats.setYellowCardsHome(espnService.extractStatInt(homeStats, "yellowCards"));
-                    stats.setYellowCardsAway(espnService.extractStatInt(awayStats, "yellowCards"));
-                    stats.setRedCardsHome(espnService.extractStatInt(homeStats, "redCards"));
-                    stats.setRedCardsAway(espnService.extractStatInt(awayStats, "redCards"));
-
-                    int totalShotsHome = espnService.extractStatInt(homeStats, "totalShots");
-                    int totalShotsAway = espnService.extractStatInt(awayStats, "totalShots");
-                    stats.setBigChancesHome(totalShotsHome);
-                    stats.setBigChancesAway(totalShotsAway);
-
-                    stats.setExpectedGoalsHome(xgService.calculateEstimatedXG(homeStats));
-                    stats.setExpectedGoalsAway(xgService.calculateEstimatedXG(awayStats));
-                }
+        for (JsonNode team : teams) {
+            String homeAway = team.path("homeAway").asText();
+            if ("home".equals(homeAway)) {
+                homeTeamNode = team;
+            } else if ("away".equals(homeAway)) {
+                awayTeamNode = team;
             }
         }
+
+        if (homeTeamNode == null || awayTeamNode == null) {
+            return stats;
+        }
+
+        // Possession
+        stats.setPossessionHome(espnService.extractStat(homeTeamNode, "possessionPct"));
+        stats.setPossessionAway(espnService.extractStat(awayTeamNode, "possessionPct"));
+
+        // Total shots
+        stats.setTotalShotsHome(espnService.extractStat(homeTeamNode, "totalShots"));
+        stats.setTotalShotsAway(espnService.extractStat(awayTeamNode, "totalShots"));
+
+        // Shots on goal
+        stats.setShotsOnGoalHome(espnService.extractStatInt(homeTeamNode, "shotsOnTarget"));
+        stats.setShotsOnGoalAway(espnService.extractStatInt(awayTeamNode, "shotsOnTarget"));
+
+        // Saves
+        stats.setSavesHome(espnService.extractStatInt(homeTeamNode, "saves"));
+        stats.setSavesAway(espnService.extractStatInt(awayTeamNode, "saves"));
+
+        // Tackles
+        stats.setTotalTacklesHome(espnService.extractStatInt(homeTeamNode, "totalTackles"));
+        stats.setTotalTacklesAway(espnService.extractStatInt(awayTeamNode, "totalTackles"));
+
+        // Effective tackles
+        stats.setEffectiveTacklesHome(espnService.extractStatInt(homeTeamNode, "effectiveTackles"));
+        stats.setEffectiveTacklesAway(espnService.extractStatInt(awayTeamNode, "effectiveTackles"));
+
+        // Interceptions
+        stats.setInterceptionsHome(espnService.extractStatInt(homeTeamNode, "interceptions"));
+        stats.setInterceptionsAway(espnService.extractStatInt(awayTeamNode, "interceptions"));
+
+        // Gule / røde kort
+        stats.setYellowCardsHome(espnService.extractStatInt(homeTeamNode, "yellowCards"));
+        stats.setYellowCardsAway(espnService.extractStatInt(awayTeamNode, "yellowCards"));
+        stats.setRedCardsHome(espnService.extractStatInt(homeTeamNode, "redCards"));
+        stats.setRedCardsAway(espnService.extractStatInt(awayTeamNode, "redCards"));
+
+        // Hjørnespark – "wonCorners"
+        stats.setCornersHome(espnService.extractStatInt(homeTeamNode, "wonCorners"));
+        stats.setCornersAway(espnService.extractStatInt(awayTeamNode, "wonCorners"));
+
+        // xG (som du allerede bruger din egen service til)
+        stats.setExpectedGoalsHome(xgService.calculateEstimatedXG(homeTeamNode));
+        stats.setExpectedGoalsAway(xgService.calculateEstimatedXG(awayTeamNode));
 
         return stats;
     }
@@ -346,8 +374,6 @@ public class MatchService {
                     form.setDraws(stats.get(4).path("value").asInt(0));
                     form.setPoints(stats.get(3).path("value").asInt(0));
                     form.setPosition(stats.get(6).path("value").asInt(0));
-
-                    String overall = stats.get(7).path("displayValue").asText("");
 
                 }
             }

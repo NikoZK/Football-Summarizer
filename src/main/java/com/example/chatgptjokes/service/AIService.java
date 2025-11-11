@@ -13,12 +13,12 @@ public class AIService {
     }
 
     public String generateMatchSummary(String homeTeam, String awayTeam, String score,
-                                       Integer possessionHome, Integer possessionAway,
+                                       Double possessionHome, Double possessionAway,
                                        Integer shotsOnGoalHome, Integer shotsOnGoalAway) {
         try {
             String prompt = String.format(
                     "Summarize this football match in 2-3 sentences: %s vs %s, Final Score: %s. " +
-                            "Possession: %d%% vs %d%%, Shots on target: %d vs %d. Be concise and engaging.",
+                            "Possession: %.1f%% vs %.1f%%, Shots on target: %d vs %d. Be concise and engaging.",
                     homeTeam, awayTeam, score,
                     possessionHome, possessionAway,
                     shotsOnGoalHome, shotsOnGoalAway
@@ -30,7 +30,7 @@ public class AIService {
             System.err.println("⚠️  AI summary generation failed: " + e.getMessage());
             return String.format(
                     "%s faced %s in an exciting match that ended %s. " +
-                            "Possession: %d%% vs %d%%, shots on target: %d vs %d.",
+                            "Possession: %.1f%% vs %.1f%%, shots on target: %d vs %d.",
                     homeTeam, awayTeam, score,
                     possessionHome, possessionAway,
                     shotsOnGoalHome, shotsOnGoalAway
@@ -77,18 +77,25 @@ public class AIService {
         }
     }
 
-    public String generatePlayerAnalysis(String playerName, String position, double rating, String type, int minutes) {
+    public String generatePlayerAnalysis(String playerName, String position, double rating, String type, int minutes,
+                                         int goals, int assists, int shotsOnTarget, int saves,
+                                         int foulsCommitted, int foulsSuffered, boolean cleanSheet) {
         try {
             String prompt = String.format(
-                    "In one sentence, explain why %s (position: %s) with an estimated rating of %.1f was among the %s performers in this football match.",
-                    playerName, position, rating, type
+                    "Explain in one concise sentence why %s (position: %s) was among the %s performers in this football match. " +
+                            "They played %d minutes and achieved the following stats: Goals: %d, Assists: %d, Shots on target: %d, Saves: %d, " +
+                            "Fouls committed: %d, Fouls suffered: %d, Clean sheet: %s. " +
+                            "Do NOT invent any stats, only summarize what is given, and focus on contribution.",
+                    playerName, position, type, minutes,
+                    goals, assists, shotsOnTarget, saves,
+                    foulsCommitted, foulsSuffered, cleanSheet ? "Yes" : "No"
             );
-            MyResponse analysisResponse = openAiService.makeRequest(prompt, "You are a football analyst.");
+            MyResponse analysisResponse = openAiService.makeRequest(prompt, "You are a football analyst summarizing actual player performance.");
             return analysisResponse.getAnswer();
         } catch (Exception e) {
             String starterNote = minutes >= 60 ? "played significant minutes" : "had limited playing time";
             return String.format(
-                    "%s (%s) %s and earned an estimated rating of %.1f in this match.",
+                    "%s (%s) %s and earned a rating of %.1f in this match.",
                     playerName, position, starterNote, rating
             );
         }

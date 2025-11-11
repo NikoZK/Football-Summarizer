@@ -12,7 +12,7 @@ public class ESPNService {
     private final ObjectMapper objectMapper;
 
     private static final String ESPN_API_BASE = "http://site.api.espn.com/apis/site/v2/sports/soccer";
-    private static final String DEFAULT_LEAGUE = "eng.1"; // English Premier League
+    private static final String DEFAULT_LEAGUE = "UEFA.CHAMPIONS"; // English Premier League
 
     public ESPNService() {
         this.webClient = WebClient.builder()
@@ -55,20 +55,21 @@ public class ESPNService {
         }
     }
 
-    public Integer extractStat(JsonNode teamStats, String statName) {
+    public Double extractStat(JsonNode teamStats, String statName) {
         JsonNode statistics = teamStats.path("statistics");
         for (JsonNode stat : statistics) {
             if (stat.path("name").asText().equals(statName)) {
                 String displayValue = stat.path("displayValue").asText();
                 try {
                     double value = Double.parseDouble(displayValue.replace("%", "").trim());
-                    return (int) Math.round(value);
+                    return value;
+
                 } catch (NumberFormatException e) {
-                    return 50;
+                    return 50.0;
                 }
             }
         }
-        return 50;
+        return 50.0;
     }
 
     public Integer extractStatInt(JsonNode teamStats, String statName) {
