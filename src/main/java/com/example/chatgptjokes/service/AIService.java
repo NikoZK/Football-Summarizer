@@ -1,7 +1,10 @@
 package com.example.chatgptjokes.service;
 
+import com.example.chatgptjokes.dtos.MatchSummaryResponse;
 import com.example.chatgptjokes.dtos.MyResponse;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class AIService {
@@ -14,29 +17,50 @@ public class AIService {
 
     public String generateMatchSummary(String homeTeam, String awayTeam, String score,
                                        Double possessionHome, Double possessionAway,
-                                       Integer shotsOnGoalHome, Integer shotsOnGoalAway) {
+                                       Integer shotsOnGoalHome, Integer shotsOnGoalAway,
+                                       Double xGHome, Double xGAway,
+                                       Integer tacklesHome, Integer tacklesAway,
+                                       Integer interceptionsHome, Integer interceptionsAway,
+                                       Integer savesHome, Integer savesAway) {
         try {
             String prompt = String.format(
-                    "Summarize this football match in 2-3 sentences: %s vs %s, Final Score: %s. " +
-                            "Possession: %.1f%% vs %.1f%%, Shots on target: %d vs %d. Be concise and engaging.",
+                    "You are a football analyst. Summarize the match %s vs %s (Final Score: %s) in 3-4 sentences. " +
+                            "Include insights such as: which team controlled possession, attacking vs defensive play, " +
+                            "efficiency in front of goal, defensive efforts, key momentum shifts, and any notable tactical patterns. " +
+                            "Stats: Possession %.1f%% vs %.1f%%, Shots on target: %d vs %d, Expected Goals (xG): %.2f vs %.2f, " +
+                            "Tackles: %d vs %d, Interceptions: %d vs %d, Saves: %d vs %d. " +
+                            "Make it engaging for readers, but do NOT invent players or events, only interpret the given stats.",
                     homeTeam, awayTeam, score,
                     possessionHome, possessionAway,
-                    shotsOnGoalHome, shotsOnGoalAway
+                    shotsOnGoalHome, shotsOnGoalAway,
+                    xGHome, xGAway,
+                    tacklesHome, tacklesAway,
+                    interceptionsHome, interceptionsAway,
+                    savesHome, savesAway
             );
 
-            MyResponse aiResponse = openAiService.makeRequest(prompt, "You are a football commentator.");
+            MyResponse aiResponse = openAiService.makeRequest(prompt, "You are a football analyst providing tactical match insights.");
             return aiResponse.getAnswer();
+
         } catch (Exception e) {
             System.err.println("⚠️  AI summary generation failed: " + e.getMessage());
+            // fallback
             return String.format(
-                    "%s faced %s in an exciting match that ended %s. " +
-                            "Possession: %.1f%% vs %.1f%%, shots on target: %d vs %d.",
+                    "%s faced %s in a match that ended %s. Possession: %.1f%% vs %.1f%%, shots on target: %d vs %d, xG: %.2f vs %.2f. " +
+                            "Defensive efforts: Tackles %d vs %d, Interceptions %d vs %d, Saves %d vs %d. " +
+                            "The team with higher possession had more control, but defensive work kept the match balanced.",
                     homeTeam, awayTeam, score,
                     possessionHome, possessionAway,
-                    shotsOnGoalHome, shotsOnGoalAway
+                    shotsOnGoalHome, shotsOnGoalAway,
+                    xGHome, xGAway,
+                    tacklesHome, tacklesAway,
+                    interceptionsHome, interceptionsAway,
+                    savesHome, savesAway
             );
         }
     }
+
+
 
     public String generateBasicMatchSummary(String homeTeam, String awayTeam, String score) {
         try {
@@ -56,26 +80,40 @@ public class AIService {
         }
     }
 
-    public String generateMatchPreview(String homeTeam, String awayTeam, String stadium) {
+    public String generateMatchPreview(String homeTeam, String awayTeam, String stadium,
+                                       MatchSummaryResponse.TeamForm homeForm,
+                                       MatchSummaryResponse.TeamForm awayForm) {
         try {
             String prompt = String.format(
-                    "Generate a 2-3 sentence prediction for the upcoming football match between %s (home) and %s (away). " +
-                            "Consider recent form, head-to-head records, and playing styles. Be specific about who is favored and why.",
-                    homeTeam, awayTeam
+                    "You are a football analyst. Write a concise 2-3 sentence preview for the upcoming match between %s (home) and %s (away) at %s. " +
+                            "Include league form and current table position for context. " +
+                            "%s form: %dW-%dD-%dL, %d points, position %d.\n" +
+                            "%s form: %dW-%dD-%dL, %d points, position %d.\n" +
+                            "Analyze their momentum, consistency, and any trends, but DO NOT invent player news or fake stats. " +
+                            "End with a realistic insight about who might have the upper hand.",
+                    homeTeam, awayTeam, stadium,
+                    homeTeam, homeForm.getWins(), homeForm.getDraws(), homeForm.getLosses(),
+                    homeForm.getPoints(), homeForm.getPosition(),
+                    awayTeam, awayForm.getWins(), awayForm.getDraws(), awayForm.getLosses(),
+                    awayForm.getPoints(), awayForm.getPosition()
             );
 
-            MyResponse aiResponse = openAiService.makeRequest(prompt, "You are a football analyst providing match predictions.");
+            MyResponse aiResponse = openAiService.makeRequest(
+                    prompt,
+                    "You are a football analyst providing tactical pre-match insights."
+            );
             return aiResponse.getAnswer();
+
         } catch (Exception e) {
             System.err.println("⚠️  AI prediction generation failed: " + e.getMessage());
             return String.format(
-                    "This promises to be an exciting match between %s and %s. " +
-                            "The home team will look to leverage their advantage at %s, " +
-                            "while the visitors will aim to take all three points.",
+                    "This promises to be an exciting match between %s and %s at %s. " +
+                            "Both sides will aim to capitalize on recent form.",
                     homeTeam, awayTeam, stadium
             );
         }
     }
+
 
     public String generatePlayerAnalysis(String playerName, String position, double rating, String type, int minutes,
                                          int goals, int assists, int shotsOnTarget, int saves,

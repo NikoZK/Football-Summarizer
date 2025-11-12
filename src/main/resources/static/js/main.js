@@ -102,6 +102,8 @@ async function openMatchDetails(fixtureId) {
     currentFixtureId = fixtureId;
     matchDetailsModal.show();
 
+
+
     const summarySection = document.getElementById('match-summary-section');
     const performanceButtons = document.getElementById('performance-buttons');
     const performanceSection = document.getElementById('player-performance-section');
@@ -203,6 +205,15 @@ function displayMatchSummary(summary) {
                     <h5 class="stat-group-title"><i class="fas fa-bullseye me-2"></i>Attacking</h5>
 
                     <div class="stat-item">
+                        <div class="stat-header">Expected Goals (xG)</div>
+                        <div class="stat-values">
+                            <span class="home-stat">${xgHome}</span>
+                            <span class="stat-label">xG</span>
+                            <span class="away-stat">${xgAway}</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-item">
                         <div class="stat-header">Total Shots</div>
                         <div class="stat-values">
                             <span class="home-stat">${stats.totalShotsHome}</span>
@@ -221,15 +232,6 @@ function displayMatchSummary(summary) {
                     </div>
 
                     <div class="stat-item">
-                        <div class="stat-header">Expected Goals (xG)</div>
-                        <div class="stat-values">
-                            <span class="home-stat">${xgHome}</span>
-                            <span class="stat-label">xG</span>
-                            <span class="away-stat">${xgAway}</span>
-                        </div>
-                    </div>
-
-                    <div class="stat-item">
                         <div class="stat-header">Corners</div>
                         <div class="stat-values">
                             <span class="home-stat">${stats.cornersHome}</span>
@@ -244,15 +246,6 @@ function displayMatchSummary(summary) {
             <div class="stat-group-wrapper defensive-group">
                 <div class="stat-group">
                     <h5 class="stat-group-title"><i class="fas fa-shield-alt me-2"></i>Defensive</h5>
-
-                    <div class="stat-item">
-                        <div class="stat-header">Saves</div>
-                        <div class="stat-values">
-                            <span class="home-stat">${stats.savesHome}</span>
-                            <span class="stat-label">Saves</span>
-                            <span class="away-stat">${stats.savesAway}</span>
-                        </div>
-                    </div>
 
                     <div class="stat-item">
                         <div class="stat-header">Tackles</div>
@@ -280,6 +273,16 @@ function displayMatchSummary(summary) {
                             <span class="away-stat">${stats.interceptionsAway}</span>
                         </div>
                     </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-header">Saves</div>
+                        <div class="stat-values">
+                            <span class="home-stat">${stats.savesHome}</span>
+                            <span class="stat-label">Saves</span>
+                            <span class="away-stat">${stats.savesAway}</span>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -340,13 +343,24 @@ function displayMatchPreview(summary) {
                         <h6 class="text-primary">${summary.homeTeam}</h6>
                         ${homeForm.position ? `<p class="mb-1"><strong>Position:</strong> ${homeForm.position}</p>` : ''}
                         ${homeForm.points !== null ? `<p class="mb-1"><strong>Points:</strong> ${homeForm.points}</p>` : ''}
-                        ${homeForm.wins !== null ? `<p class="text-muted small">W: ${homeForm.wins} | D: ${homeForm.draws} | L: ${homeForm.losses}</p>` : ''}
+                        ${homeForm.lastFiveGames ? `
+<div class="mb-2">
+        <strong>Recent Form:</strong><br>
+        ${formatFormBadges(homeForm.lastFiveGames)}
+    </div>` : ''}
+${homeForm.wins !== null ? `<p class="text-muted small">W: ${homeForm.wins} | D: ${homeForm.draws} | L: ${homeForm.losses}</p>` : ''}
                     </div>
                     <div class="col-md-6 text-center border-start">
                         <h6 class="text-danger">${summary.awayTeam}</h6>
                         ${awayForm.position ? `<p class="mb-1"><strong>Position:</strong> ${awayForm.position}</p>` : ''}
                         ${awayForm.points !== null ? `<p class="mb-1"><strong>Points:</strong> ${awayForm.points}</p>` : ''}
-                        ${awayForm.wins !== null ? `<p class="text-muted small">W: ${awayForm.wins} | D: ${awayForm.draws} | L: ${awayForm.losses}</p>` : ''}
+                        ${awayForm.lastFiveGames ? `
+    <div class="mb-2">
+        <strong>Recent Form:</strong><br>
+        ${formatFormBadges(awayForm.lastFiveGames)}
+    </div>` : ''}
+${awayForm.wins !== null ? `<p class="text-muted small">W: ${awayForm.wins} | D: ${awayForm.draws} | L: ${awayForm.losses}</p>` : ''}
+
                     </div>
                 </div>
             </div>
@@ -431,7 +445,7 @@ function formatFormBadges(formString) {
             badgeClass = 'bg-danger';
             icon = '<i class="fas fa-times"></i>';
         }
-        return `<span class="badge ${badgeClass} me-1">${icon} ${result}</span>`;
+        return `<span class="badge ${badgeClass} me-1">${icon}</span>`;
     }).join('');
 }
 
