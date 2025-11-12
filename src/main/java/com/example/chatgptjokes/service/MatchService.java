@@ -233,7 +233,15 @@ public class MatchService {
                     stats.getPossessionHome(),
                     stats.getPossessionAway(),
                     stats.getShotsOnGoalHome(),
-                    stats.getShotsOnGoalAway()
+                    stats.getShotsOnGoalAway(),
+                    stats.getExpectedGoalsHome(),
+                    stats.getExpectedGoalsAway(),
+                    stats.getTotalTacklesHome(),
+                    stats.getTotalTacklesAway(),
+                    stats.getInterceptionsHome(),
+                    stats.getInterceptionsAway(),
+                    stats.getSavesHome(),
+                    stats.getSavesAway()
             );
         }
     }
@@ -316,7 +324,7 @@ public class MatchService {
             for (JsonNode competitor : competitors) {
                 boolean isHome = competitor.path("homeAway").asText().equals("home");
                 String teamName = competitor.path("team").path("displayName").asText();
-                MatchSummaryResponse.TeamForm form = extractTeamFormFromStandings(teamName, standingsMap);
+                MatchSummaryResponse.TeamForm form = extractTeamFormFromStandings(teamName, standingsMap, root);
                 if (isHome) {
                     preview.setHomeForm(form);
                 } else {
@@ -327,8 +335,11 @@ public class MatchService {
             String prediction = aiService.generateMatchPreview(
                     matchResponse.getHomeTeam(),
                     matchResponse.getAwayTeam(),
-                    preview.getStadium()
+                    preview.getStadium(),
+                    preview.getHomeForm(),
+                    preview.getAwayForm()
             );
+
             preview.setPrediction(prediction);
 
             matchResponse.setPreview(preview);
@@ -360,33 +371,61 @@ public class MatchService {
         return standingsMap;
     }
 
-    private MatchSummaryResponse.TeamForm extractTeamFormFromStandings(String teamName, Map<String, JsonNode> standingsMap) {
+    private MatchSummaryResponse.TeamForm extractTeamFormFromStandings(String teamName, Map<String, JsonNode> standingsMap, JsonNode root) {
         MatchSummaryResponse.TeamForm form = new MatchSummaryResponse.TeamForm();
 
         try {
+            // ✅ 1️⃣ Try ESPN’s actual recent form data first
+            JsonNode formArray = root.path("boxscore").path("form");
+            if (formArray.isArray()) {
+                for (JsonNode teamNode : formArray) {
+                    JsonNode teamInfo = teamNode.path("team");
+                    String name = teamInfo.path("displayName").asText("");
+                    if (name.equalsIgnoreCase(teamName)) {
+                        JsonNode events = teamNode.path("events");
+                        if (events.isArray()) {
+                            StringBuilder lastFive = new StringBuilder();
+                            int count = 0;
+                            for (JsonNode match : events) {
+                                String result = match.path("gameResult").asText("");
+                                if (!result.isEmpty()) {
+                                    if (count > 0) lastFive.append("-");
+                                    lastFive.append(result);
+                                    count++;
+                                    if (count >= 5) break; // limit to 5 matches
+                                }
+                            }
+                            form.setLastFiveGames(lastFive.toString());
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // ✅ 2️⃣ If form was found, we can still enrich with standings
             JsonNode teamStanding = standingsMap.get(teamName);
             if (teamStanding != null) {
                 JsonNode stats = teamStanding.path("stats");
-
                 if (stats.isArray() && stats.size() >= 7) {
                     form.setWins(stats.get(5).path("value").asInt(0));
                     form.setLosses(stats.get(1).path("value").asInt(0));
                     form.setDraws(stats.get(4).path("value").asInt(0));
                     form.setPoints(stats.get(3).path("value").asInt(0));
                     form.setPosition(stats.get(6).path("value").asInt(0));
-
                 }
             }
 
-
+            // ✅ 3️⃣ If ESPN form wasn’t found at all, set placeholder
+            if (form.getLastFiveGames() == null || form.getLastFiveGames().isEmpty()) {
+                form.setLastFiveGames("N/A");
+            }
 
         } catch (Exception e) {
-            System.err.println("Error extracting team form from standings for " + teamName + ": " + e.getMessage());
-
+            System.err.println("Error extracting form for " + teamName + ": " + e.getMessage());
+            form.setLastFiveGames("N/A");
         }
 
         return form;
     }
-
 
 }
