@@ -6,10 +6,14 @@ Top 3 best/worst players fix. = Virker fremragende nu, AI summary hallucinerer i
 
 Venue fix 🥬🥬
 
-Tilføj flere ligaer + CL
+Tilføj flere ligaer 🥬🥬
 
-Flere relevante stats(total shots, saves, total tackles, effective tackles, interceptions, woncorners. = Implementeret dejligt, kun css skal fixes.
+Flere relevante stats(total shots, saves, total tackles, effective tackles, interceptions, woncorners. = Implementeret dejligt, 🥬🥬kun css skal fixes.
 
 Tilføje standings/point/W/L til match preview 🥬🥬
 
-Fix readMe fra AI SLOP
+Fix ALT AI SLOP
+
+eventuel caching?
+
+Instant load med dato pickeren  🥬🥬

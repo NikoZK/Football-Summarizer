@@ -11,20 +11,23 @@ public class FootballService {
 
     private final MatchService matchService;
     private final PlayerService playerService;
+
     public FootballService(MatchService matchService, PlayerService playerService) {
         this.matchService = matchService;
         this.playerService = playerService;
     }
 
-    public Map<String, Object> getMatches(String date) {
-        return matchService.getMatches(date);
+    public Map<String, Object> getMatches(String date, String league) {
+        return matchService.getMatches(date, league);
     }
 
-    public MatchSummaryResponse getMatchSummary(String fixtureId) {
-        return matchService.getMatchSummary(fixtureId);
+
+    public MatchSummaryResponse getMatchSummary(String fixtureId, String league) {
+        return matchService.getMatchSummary(fixtureId, league);
     }
 
-    public PlayerPerformanceResponse getPlayerPerformance(String fixtureId, String type) {
-        return playerService.getPlayerPerformance(fixtureId, type);
+    public PlayerPerformanceResponse getPlayerPerformance(String fixtureId, String type, String league) {
+        return playerService.getPlayerPerformance(fixtureId, type, league);
     }
+
 }

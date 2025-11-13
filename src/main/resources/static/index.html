@@ -26,15 +26,17 @@
             <span class="navbar-text text-white">
                 <i class="fas fa-trophy me-2"></i> Premier League
                 <label>Choose a league
-                <select class="" onchange="">Change League
+
+                    <select id="league-selector" class="awesome" onchange="loadMatches()">
                     <option value="eng.1">Premier League</option>
                     <option value="esp.1">La Liga</option>
                     <option value="ita.1">Serie A</option>
                     <option value="fra.1">Ligue 1</option>
                     <option value="ger.1">Bundesliga</option>
-                    <option value="uefa.champions">Champions League</option>
+                    <option value="UEFA.CHAMPIONS">Champions League</option>
                     <option value="den.1">Superligaen</option>
-                </select>
+                    </select>
+                    </form>
                 </label>
             </span>
         </div>
@@ -48,7 +50,7 @@
                 <button class="btn btn-outline-primary" onclick="changeDate(-1)">
                     <i class="fas fa-chevron-left"></i> Previous
                 </button>
-                <input type="date" id="match-date" class="form-control" />
+                <input type="date" id="match-date" class="form-control" onchange="loadMatches()" />
                 <button class="btn btn-outline-primary" onclick="changeDate(1)">
                     Next <i class="fas fa-chevron-right"></i>
                 </button>

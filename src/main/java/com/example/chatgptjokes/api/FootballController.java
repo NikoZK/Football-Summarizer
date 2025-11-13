@@ -19,19 +19,24 @@ public class FootballController {
     }
 
     @GetMapping("/matches")
-    public Map<String, Object> getMatches(@RequestParam(required = false) String date) {
-        return footballService.getMatches(date);
+    public Map<String, Object> getMatches(
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) String league) {
+        return footballService.getMatches(date, league);
     }
 
     @GetMapping("/match/{fixtureId}/summary")
-    public MatchSummaryResponse getMatchSummary(@PathVariable String fixtureId) {
-        return footballService.getMatchSummary(fixtureId);
+    public MatchSummaryResponse getMatchSummary(
+            @PathVariable String fixtureId,
+            @RequestParam(required = false) String league) {
+        return footballService.getMatchSummary(fixtureId, league);
     }
 
     @GetMapping("/match/{fixtureId}/players")
     public PlayerPerformanceResponse getPlayerPerformance(
             @PathVariable String fixtureId,
-            @RequestParam String type) {
-        return footballService.getPlayerPerformance(fixtureId, type);
+            @RequestParam String type,
+            @RequestParam(required = false) String league) {
+        return footballService.getPlayerPerformance(fixtureId, type, league);
     }
 }
