@@ -13,6 +13,14 @@ public class ESPNService {
 
     private static final String ESPN_API_BASE = "http://site.api.espn.com/apis/site/v2/sports/soccer";
     private static final String DEFAULT_LEAGUE = "eng.1"; // English Premier League
+    private static final String SPAIN = "esp.1";
+    private static final String FRANCE = "fra.1";
+    private static final String GERMANY = "ger.1";
+    private static final String ITALY = "ita.1";
+    private static final String CHAMPIONS = "UEFA.CHAMPIONS";
+    private static final String DENMARK = "den.1";
+    private static final String[] LEAGUES = {"eng.1","esp.1", "fra.1", "ger.1", "ita.1","UEFA.CHAMPIONS", "den.1"};
+
 
     public ESPNService() {
         this.webClient = WebClient.builder()
@@ -40,7 +48,11 @@ public class ESPNService {
     }
 
     public JsonNode fetchMatchSummary(String fixtureId) {
-        String url = ESPN_API_BASE + "/" + DEFAULT_LEAGUE + "/summary?event=" + fixtureId;
+        return fetchMatchSummary(fixtureId, DEFAULT_LEAGUE);
+    }
+
+    public JsonNode fetchMatchSummary(String fixtureId, String league) {
+        String url = ESPN_API_BASE + "/" + league + "/summary?event=" + fixtureId;
 
         try {
             String response = webClient.get()
@@ -54,6 +66,7 @@ public class ESPNService {
             throw new RuntimeException("Failed to fetch match summary from ESPN: " + e.getMessage(), e);
         }
     }
+
 
     public Double extractStat(JsonNode teamStats, String statName) {
         JsonNode statistics = teamStats.path("statistics");
