@@ -21,14 +21,13 @@ public class MatchService {
         this.aiService = aiService;
         this.xgService = xgService;
     }
-
-    public Map<String, Object> getMatches(String date) {
+    public Map<String, Object> getMatches(String date, String league) {
         if (date == null || date.isEmpty()) {
             date = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
         }
 
         String dateParam = date.replace("-", "");
-        JsonNode root = espnService.fetchScoreboard(dateParam);
+        JsonNode root = espnService.fetchScoreboard(dateParam, league);
         JsonNode events = root.path("events");
 
         List<Map<String, Object>> matches = new ArrayList<>();
@@ -76,9 +75,9 @@ public class MatchService {
         return result;
     }
 
-    public MatchSummaryResponse getMatchSummary(String fixtureId) {
+    public MatchSummaryResponse getMatchSummary(String fixtureId, String league) {
         try {
-            JsonNode root = espnService.fetchMatchSummary(fixtureId);
+            JsonNode root = espnService.fetchMatchSummary(fixtureId, league);
 
             if (!root.has("header")) {
                 throw new RuntimeException("Invalid response structure from ESPN API");
@@ -143,6 +142,7 @@ public class MatchService {
             throw new RuntimeException("Error processing match data: " + e.getClass().getSimpleName() + " - " + e.getMessage(), e);
         }
     }
+
 
     private MatchSummaryResponse.MatchStatistics extractMatchStatistics(JsonNode root) {
         MatchSummaryResponse.MatchStatistics stats = new MatchSummaryResponse.MatchStatistics();

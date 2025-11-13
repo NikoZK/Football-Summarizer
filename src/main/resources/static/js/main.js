@@ -26,7 +26,9 @@ function changeDate(days) {
 
 async function loadMatches() {
     const dateInput = document.getElementById('match-date');
+    const leagueSelector = document.getElementById('league-selector');
     const date = dateInput.value;
+    const league = leagueSelector.value;
     const container = document.getElementById('matches-container');
     const spinner = document.getElementById('loading-spinner');
 
@@ -34,7 +36,7 @@ async function loadMatches() {
     container.innerHTML = '';
 
     try {
-        const response = await fetch(`${SERVER_URL}matches?date=${date}`).then(handleHttpErrors);
+        const response = await fetch(`${SERVER_URL}matches?date=${date}&league=${league}`).then(handleHttpErrors);
 
         if (!response.matches || response.matches.length === 0) {
             container.innerHTML = `
@@ -120,7 +122,9 @@ async function openMatchDetails(fixtureId) {
     performanceSection.innerHTML = '';
 
     try {
-        const summary = await fetch(`${SERVER_URL}match/${fixtureId}/summary`).then(handleHttpErrors);
+        const leagueSelector = document.getElementById('league-selector');
+        const league = leagueSelector.value;
+        const summary = await fetch(`${SERVER_URL}match/${fixtureId}/summary?league=${league}`).then(handleHttpErrors);
         displayMatchSummary(summary);
 
         // Only show performance buttons for completed matches (must have statistics)
@@ -462,7 +466,9 @@ async function loadPlayerPerformance(type) {
     `;
 
     try {
-        const performance = await fetch(`${SERVER_URL}match/${currentFixtureId}/players?type=${type}`).then(handleHttpErrors);
+        const leagueSelector = document.getElementById('league-selector');
+        const league = leagueSelector.value;
+        const performance = await fetch(`${SERVER_URL}match/${currentFixtureId}/players?type=${type}&league=${league}`).then(handleHttpErrors);
         displayPlayerPerformance(performance);
     } catch (error) {
         performanceSection.innerHTML = `

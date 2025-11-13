@@ -17,9 +17,9 @@ public class PlayerService {
         this.aiService = aiService;
     }
 
-    public PlayerPerformanceResponse getPlayerPerformance(String fixtureId, String type) {
+    public PlayerPerformanceResponse getPlayerPerformance(String fixtureId, String type, String league) {
         try {
-            JsonNode root = espnService.fetchMatchSummary(fixtureId);
+            JsonNode root = espnService.fetchMatchSummary(fixtureId, league);
 
             System.out.println("========== ESPN API RESPONSE ==========");
             System.out.println("Has rosters: " + root.has("rosters"));
