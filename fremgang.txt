@@ -11,3 +11,5 @@ Tilføj flere ligaer + CL
 Flere relevante stats(total shots, saves, total tackles, effective tackles, interceptions, woncorners. = Implementeret dejligt, kun css skal fixes.
 
 Tilføje standings/point/W/L til match preview 🥬🥬
+
+Instant load med dato pickeren
