@@ -12,4 +12,6 @@ Flere relevante stats(total shots, saves, total tackles, effective tackles, inte
 
 Tilføje standings/point/W/L til match preview 🥬🥬
 
+Fix readMe fra AI SLOP
+
 Instant load med dato pickeren
