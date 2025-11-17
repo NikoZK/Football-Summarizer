@@ -1,202 +1,214 @@
-# ⚽ Football Match Center
+# Football Summarizer – Technical Overview
 
-A modern, AI-powered football (soccer) match tracking website that displays live match information, detailed statistics, and intelligent player performance analysis using **ESPN's FREE API** - no API keys required for match data!
+This document is aimed at developers who want to clone and run the project from GitHub. It describes requirements, how to start the app, all available REST endpoints, and a few important implementation details.
 
-## 🌟 Features
+## 1. Stack and Architecture
+- Backend: Spring Boot 3 (Java 17), Maven
+- Frontend: Static `index.html` + `main.js` (Bootstrap, vanilla JS)
+- Data: In‑memory database by default (JPA, H2); optional MySQL
+- External APIs:
+  - ESPN public API for match data (no key required)
+  - OpenAI Chat Completions API for AI summaries
 
-- **📅 Date-based Match Browsing** - View matches from any date with an intuitive date picker
-- **🏟️ Beautiful Match Cards** - Elegant display with team logos, scores, and match status
-- **📊 Detailed Match Statistics**:
-  - Ball Possession (visual progress bars)
-  - Shots on Goal
-  - Yellow/Red Cards
-  - And more...
-- **🤖 AI-Powered Analysis**:
-  - Automatic match summaries using GPT-4
-  - Best performers analysis with AI insights
-  - Worst performers analysis with constructive feedback
-- **📱 Fully Responsive** - Works beautifully on desktop, tablet, and mobile devices
-- **⚡ Real-time Data** - Powered by ESPN's FREE API with comprehensive match data
-- **🆓 No Football API Key Required** - Uses ESPN's public API endpoints!
+The backend serves both the REST API and the static frontend from `src/main/resources/static`.
 
-## 🚀 Quick Start
+## 2. Requirements
+- Java 17 or newer
+- Git
+- Internet access to:
+  - `api.openai.com` (only if AI features are enabled)
+  - ESPN’s public football endpoints (used internally by the backend)
 
-### Prerequisites
+No football data API key is needed. An OpenAI API key is required for AI analysis.
 
-1. **Java 17** or higher
-2. **Maven** (included via wrapper)
-3. **API Key** (only OpenAI):
-   - OpenAI API Key ([Get it here](https://platform.openai.com/api-keys))
-   - ✅ **Football API is FREE** - No key needed!
+## 3. Configuration
+Main configuration: `src/main/resources/application.properties`
 
-### Installation
+- OpenAI API key (required for AI features):
+  - Property: `app.api-key=${API_KEY}`
+  - Environment variable: `API_KEY`
+- OpenAI model and tuning:
+  - `app.url=https://api.openai.com/v1/chat/completions`
+  - `app.model=gpt-4o`
+  - `app.temperature`, `app.max_tokens`, etc.
+- JPA / database:
+  - `spring.jpa.hibernate.ddl-auto=create-drop` (schema recreated on start/stop)
+  - `spring.datasource.*` is currently commented out → defaults to in‑memory DB.
 
-1. **Clone the repository**
+If you want persistent data or MySQL, you must configure `spring.datasource.url`, `spring.datasource.username`, and `spring.datasource.password` yourself.
+
+## 4. Building and Running
+
+Clone the repository and start the application locally:
+
 ```bash
-git clone <your-repo-url>
-cd chatgpt-jokes
-```
+git clone <REPO_URL>
+cd football-summarizer
 
-2. **Set up OpenAI API key** (Football data is FREE!)
-```bash
+# Set OpenAI key (bash/zsh)
 export API_KEY=your-openai-api-key
-```
 
-Or on Windows:
-```cmd
+# or on Windows (cmd)
 set API_KEY=your-openai-api-key
-```
 
-3. **Run the application**
-```bash
-./start.sh
-```
-
-Or manually:
-```bash
+# Run with Maven wrapper
 ./mvnw spring-boot:run
 ```
 
-4. **Open your browser**
-```
-http://localhost:8080
-```
+After startup:
+- Backend base URL: `http://localhost:8080`
+- Frontend: `http://localhost:8080/` (serves `index.html`)
 
-## 📖 Data Sources
+## 5. REST API – Base Path
 
-### Match Data - ESPN API (100% FREE!)
-- **Source**: ESPN's public API endpoints
-- **Cost**: $0 - Completely free
-- **Rate Limit**: None (public API)
-- **Coverage**: Premier League, Champions League, and more
-- **No API Key Required** ✅
+All endpoints are under the same base path:
 
-### AI Analysis - OpenAI GPT-4
-- **Source**: OpenAI API
-- **Cost**: ~$0.01-0.02 per match analysis
-- **API Key**: Required
+- Base: `/api/v1/football`
+- CORS: `@CrossOrigin(origins = "*")` → can be called directly from browser/JS.
 
-## 🎮 How to Use
+Date format in all examples: `YYYY-MM-DD` (ISO‑8601).
 
-1. **Select a Date**: Use the date picker to choose which day's matches you want to view
-2. **Browse Matches**: Scroll through the beautiful match cards showing scores and team logos
-3. **View Details**: Click on any match card to open detailed statistics and AI summary
-4. **Analyze Players**: Click "Best Performers" or "Worst Performers" to see AI-powered player analysis
+### 5.1 Get Matches
 
-## 🛠️ Technology Stack
+**Endpoint**
 
-### Backend
-- **Spring Boot 3.2.1** - Modern Java framework
-- **Java 17** - Latest LTS version
-- **WebClient** - Reactive HTTP client
+- `GET /api/v1/football/matches`
 
-### Frontend
-- **HTML5, CSS3, JavaScript** - Pure vanilla JS
-- **Bootstrap 5.3.2** - Responsive UI components
-- **Font Awesome 6.4** - Beautiful icons
+**Query parameters**
 
-### APIs
-- **ESPN API** - FREE football data (no authentication!)
-- **OpenAI GPT-4** - AI-powered summaries and analysis
+- `date` (optional, string): Match date in `YYYY-MM-DD`.
+  - If omitted, backend defaults to “yesterday”.
+- `league` (optional, string): ESPN league code.
+  - Common values (see also `MatchService.LEAGUE_NAMES`):
+    - `eng.1` – Premier League  
+    - `esp.1` – La Liga  
+    - `ita.1` – Serie A  
+    - `fra.1` – Ligue 1  
+    - `ger.1` – Bundesliga  
+    - `UEFA.CHAMPIONS` – Champions League  
+    - `den.1` – Superligaen  
 
-## 🔌 API Endpoints
+**Example request**
 
-### Get Matches
-```
-GET /api/v1/football/matches?date=2024-11-04
-```
-Returns all matches for the specified date.
-
-### Get Match Summary
-```
-GET /api/v1/football/match/{fixtureId}/summary
-```
-Returns detailed statistics and AI summary for a match.
-
-### Get Player Performance
-```
-GET /api/v1/football/match/{fixtureId}/players?type=best|worst
-```
-Returns top 5 best or worst performing players with AI analysis.
-
-## 🎨 Customization
-
-### Change League
-Edit `FootballService.java` line 24:
-
-```java
-private static final String DEFAULT_LEAGUE = "eng.1"; // English Premier League
+```http
+GET /api/v1/football/matches?date=2024-11-04&league=eng.1
 ```
 
-### Available Leagues (ESPN Format)
-- `eng.1` - Premier League (England)
-- `esp.1` - La Liga (Spain)
-- `ger.1` - Bundesliga (Germany)
-- `ita.1` - Serie A (Italy)
-- `fra.1` - Ligue 1 (France)
-- `usa.1` - MLS (USA)
-- `uefa.champions` - Champions League
+**Response (simplified)**
 
-### Adjust AI Model
-Edit `application.properties`:
-```properties
-app.model=gpt-4o
-app.temperature=0.8
-app.max_tokens=300
+```json
+{
+  "date": "2024-11-04",
+  "matches": [
+    {
+      "fixtureId": "123456",
+      "date": "2024-11-04T15:00:00Z",
+      "status": "FT",
+      "homeTeam": "Team A",
+      "awayTeam": "Team B",
+      "homeTeamLogo": "https://...",
+      "awayTeamLogo": "https://...",
+      "homeScore": 2,
+      "awayScore": 1,
+      "league": "Premier League",
+      "venue": "Some Stadium"
+    }
+  ]
+}
 ```
 
-## 💰 Cost Breakdown
+The frontend (`main.js`) calls this endpoint via:
 
-### Completely FREE Components:
-- ✅ **Match Data (ESPN API)** - $0
-- ✅ **Basic Application** - $0
-- ✅ **Hosting (local)** - $0
+```js
+GET http://localhost:8080/api/v1/football/matches?date=...&league=...
+```
 
-### Paid Component:
-- 💵 **OpenAI GPT-4** - ~$0.01-0.02 per match analysis (optional)
+### 5.2 Get Match Summary + AI Analysis
 
-**Total Monthly Cost (viewing 10 matches/day)**: ~$3-6 for AI features only!
+**Endpoint**
 
-## 🐛 Troubleshooting
+- `GET /api/v1/football/match/{fixtureId}/summary`
 
-### No matches showing?
-- Try a different date (match availability varies)
-- Check if the league has matches on that date
-- Check browser console for errors
-- Verify internet connection
+**Path variable**
 
-### AI summaries not working?
-- Verify your `API_KEY` (OpenAI) is valid
-- Check your OpenAI account has available credits
-- Review application logs for errors
+- `fixtureId` (string): ESPN event/match id from `/matches`.
 
-### Build failures?
-- Ensure Java 17 or higher is installed: `java -version`
-- Run `./mvnw clean install -DskipTests`
+**Query parameters**
 
-## 🎯 Benefits of ESPN API
+- `league` (optional, string): ESPN league code (same as above).
 
-1. **No API Key Required** - Start immediately!
-2. **No Rate Limits** - Public endpoints
-3. **No Cost** - Completely free
-4. **Reliable** - Backed by ESPN
-5. **Comprehensive** - Rich match data
-6. **Multiple Leagues** - Various competitions available
+**Example request**
 
-## �� Documentation
+```http
+GET /api/v1/football/match/123456/summary?league=eng.1
+```
 
-- **README.md** - This file
-- **FOOTBALL_SETUP.md** - Detailed setup guide
-- **QUICK_REFERENCE.md** - Quick commands & tips
+**Response (structure)**
 
-## 📝 License
+- Basic match info (teams, score, status)
+- Detailed statistics (possession, shots, saves, tackles, interceptions, corners, xG)
+- AI-generated text summary (if OpenAI is configured)
+- For upcoming matches: a preview instead of full stats
 
-This project is for educational purposes.
+The response type is `MatchSummaryResponse`.
 
-## 🤝 Contributing
+### 5.3 Get Player Performance (Best/Worst)
 
-Contributions are welcome! Feel free to submit issues and pull requests.
+**Endpoint**
 
----
+- `GET /api/v1/football/match/{fixtureId}/players`
 
-**Enjoy tracking your favorite football matches with AI-powered insights - now with FREE match data! ⚽🎉**
+**Path variable**
+
+- `fixtureId` (string): ESPN match id from `/matches`.
+
+**Query parameters**
+
+- `type` (required, string): `best` or `worst`
+- `league` (optional, string): ESPN league code
+
+**Example request**
+
+```http
+GET /api/v1/football/match/123456/players?type=best&league=eng.1
+```
+
+**Response**
+
+- A list of players with:
+  - Name, position, minutes
+  - Basic stats (goals, assists, shots on target, saves, fouls, etc.)
+  - An AI-generated one-line explanation of why they were among the best/worst performers
+
+The response type is `PlayerPerformanceResponse`.
+
+## 6. Frontend Behaviour
+
+- Static assets:
+  - `src/main/resources/static/index.html`
+  - `src/main/resources/static/js/main.js`
+  - `src/main/resources/static/css/main.css`
+- `main.js` uses:
+  - `SERVER_URL = 'http://localhost:8080/api/v1/football/';`
+  - If you deploy backend on another host/port, update this constant.
+- Browser UI:
+  - Date picker and league selector
+  - Match cards with basic info
+  - Modal dialog with match summary and “Best/Worst performers” buttons
+
+## 7. Deployment Notes
+
+- Default port: `8080` (standard Spring Boot)
+- CORS is open for the football endpoints – lock this down before public production use.
+- DB schema is recreated on each run (`create-drop`) – change this if you need persistence.
+- MySQL dependency is present, but not configured by default.
+
+## 8. Things to Know Before Cloning
+
+- You must provide a valid OpenAI API key via the `API_KEY` environment variable if you want AI summaries and player analysis to work. Without it, the app will fall back to simpler text or may log errors, depending on the call.
+- ESPN data is free and does not require any key, but you need internet access from the backend server.
+- The project `artifactId` in `pom.xml` is `chatgpt-jokes`, even though the app is a football summarizer – this affects the name of the built JAR but not functionality.
+- All API endpoints are versioned under `/api/v1/football` so that future versions can coexist if needed.
+
+This file (`readmeNew.md`) is intended as a technical companion to `README.md` with more details for developers and integrators.
+
