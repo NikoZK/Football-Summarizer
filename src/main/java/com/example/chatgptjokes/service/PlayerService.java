@@ -21,15 +21,11 @@ public class PlayerService {
         try {
             JsonNode root = espnService.fetchMatchSummary(fixtureId, league);
 
-            System.out.println("========== ESPN API RESPONSE ==========");
-            System.out.println("Has rosters: " + root.has("rosters"));
-            System.out.println("=======================================\n");
-
             Map<String, Integer> teamGoalsConceded = extractTeamGoalsConceded(root);
             List<PlayerPerformanceResponse.PlayerInfo> allPlayers = extractPlayersWithStats(root, teamGoalsConceded);
 
             if (allPlayers.isEmpty()) {
-                System.err.println("⚠️ No players found — returning fallback");
+                System.err.println("No players found — returning fallback");
                 return createFallbackResponse(type);
             }
 
@@ -38,7 +34,7 @@ public class PlayerService {
                     .toList();
 
             if (activePlayers.isEmpty()) {
-                System.err.println("⚠️ No active players found");
+                System.err.println("No active players found");
                 return createFallbackResponse(type);
             }
 
@@ -73,7 +69,7 @@ public class PlayerService {
             return response;
 
         } catch (Exception e) {
-            System.err.println("⚠️ Failed to fetch performance: " + e.getMessage());
+            System.err.println("Failed to fetch performance: " + e.getMessage());
             e.printStackTrace();
             return createFallbackResponse(type);
         }
@@ -125,7 +121,7 @@ public class PlayerService {
                 System.out.println("Goals conceded → " + homeTeam + ": " + awayScore + ", " + awayTeam + ": " + homeScore);
             }
         } catch (Exception e) {
-            System.err.println("⚠️ Error extracting goals conceded: " + e.getMessage());
+            System.err.println("Error extracting goals conceded: " + e.getMessage());
         }
         return map;
     }
@@ -137,7 +133,7 @@ public class PlayerService {
         JsonNode rosters = root.path("rosters");
 
         if (!rosters.isArray() || rosters.size() == 0) {
-            System.err.println("⚠️ No roster data");
+            System.err.println("No roster data");
             return allPlayers;
         }
 
@@ -264,7 +260,7 @@ public class PlayerService {
                             name, teamName, position, minutes, stats.goals, stats.assists, stats.saves, stats.shotsOnTarget, stats.foulsSuffered, stats.foulsCommitted, rating);
 
                 } catch (Exception e) {
-                    System.err.println("⚠️ Error processing player: " + e.getMessage());
+                    System.err.println("Error processing player: " + e.getMessage());
                 }
             }
         }

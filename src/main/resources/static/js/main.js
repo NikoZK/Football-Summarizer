@@ -236,7 +236,7 @@ function displayMatchSummary(summary) {
                     </div>
 
                     <div class="stat-item">
-                        <div class="stat-header">Corners</div>
+                        <div class="stat-header">Corners Taken</div>
                         <div class="stat-values">
                             <span class="home-stat">${stats.cornersHome}</span>
                             <span class="stat-label">Corners</span>
@@ -273,13 +273,13 @@ function displayMatchSummary(summary) {
                         <div class="stat-header">Interceptions</div>
                         <div class="stat-values">
                             <span class="home-stat">${stats.interceptionsHome}</span>
-                            <span class="stat-label">Interceptions</span>
+                            <span class="stat-label">Intercepted</span>
                             <span class="away-stat">${stats.interceptionsAway}</span>
                         </div>
                     </div>
                     
                     <div class="stat-item">
-                        <div class="stat-header">Saves</div>
+                        <div class="stat-header">Saves Made</div>
                         <div class="stat-values">
                             <span class="home-stat">${stats.savesHome}</span>
                             <span class="stat-label">Saves</span>
@@ -352,7 +352,7 @@ function displayMatchPreview(summary) {
         <strong>Recent Form:</strong><br>
         ${formatFormBadges(homeForm.lastFiveGames)}
     </div>` : ''}
-${homeForm.wins !== null ? `<p class="text-muted small">W: ${homeForm.wins} | D: ${homeForm.draws} | L: ${homeForm.losses}</p>` : ''}
+${homeForm.wins !== null ? `<p>W: ${homeForm.wins} | D: ${homeForm.draws} | L: ${homeForm.losses}</p>` : ''}
                     </div>
                     <div class="col-md-6 text-center border-start">
                         <h6 class="text-danger">${summary.awayTeam}</h6>
@@ -363,7 +363,7 @@ ${homeForm.wins !== null ? `<p class="text-muted small">W: ${homeForm.wins} | D:
         <strong>Recent Form:</strong><br>
         ${formatFormBadges(awayForm.lastFiveGames)}
     </div>` : ''}
-${awayForm.wins !== null ? `<p class="text-muted small">W: ${awayForm.wins} | D: ${awayForm.draws} | L: ${awayForm.losses}</p>` : ''}
+${awayForm.wins !== null ? `<p">W: ${awayForm.wins} | D: ${awayForm.draws} | L: ${awayForm.losses}</p>` : ''}
 
                     </div>
                 </div>
@@ -404,14 +404,14 @@ ${awayForm.wins !== null ? `<p class="text-muted small">W: ${awayForm.wins} | D:
                     <div class="preview-card">
                         <h5><i class="fas fa-map-marker-alt me-2"></i>Venue</h5>
                         <p class="mb-1"><strong>${preview.stadium}</strong></p>
-                        <p class="text-muted">${preview.city}</p>
+                        <p>${preview.city}</p>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="preview-card">
                         <h5><i class="fas fa-calendar-alt me-2"></i>Date & Time</h5>
                         <p class="mb-1">${preview.date || 'TBD'}</p>
-                        <p class="text-muted">${preview.time || 'TBD'}</p>
+                        <p>${preview.time || 'TBD'}</p>
                     </div>
                 </div>
             </div>
@@ -489,7 +489,7 @@ function displayPlayerPerformance(performance) {
     let html = `
         <div class="player-performance-header">
             <h4><i class="fas ${iconClass} me-2"></i>${title}</h4>
-            <p class="text-muted small">
+            <p>
                 <i class="fas fa-info-circle me-1"></i>
                 Note: Player ratings are estimated based on starting lineup and position. 
                 ESPN API does not provide official match ratings for soccer.

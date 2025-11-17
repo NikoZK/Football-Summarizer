@@ -16,8 +16,6 @@ public class PlayerPerformanceResponse {
         private String position;
         private Integer minutes;
         private String aiAnalysis;
-
-        // New attributes for detailed stats
         private Integer goals;
         private Integer assists;
         private Integer saves;

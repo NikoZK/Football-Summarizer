@@ -16,24 +16,24 @@
 </head>
 
 <body>
-    <!-- Navigation -->
     <nav class="navbar navbar-dark bg-dark shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <i class="fas fa-futbol me-2"></i>
+            <a class="navbar-brand" onclick="loadMatches()">
                 Football Summarizer
             </a>
             <span class="navbar-text text-white">
-                <i class="fas fa-trophy me-2"></i> Premier League
+                <i class="fas fa-trophy me-2"></i>
                 <label>Choose a league
 
-                    <select id="league-selector" class="awesome" onchange="loadMatches()">
+                    <select id="league-selector" style="padding: 4px" onchange="loadMatches()">
                     <option value="eng.1">Premier League</option>
                     <option value="esp.1">La Liga</option>
                     <option value="ita.1">Serie A</option>
                     <option value="fra.1">Ligue 1</option>
                     <option value="ger.1">Bundesliga</option>
                     <option value="UEFA.CHAMPIONS">Champions League</option>
+                        <option value="fifa.worldq.uefa">World Cup Qualies</option>
+                        <option value="fifa.world">World Cup</option>
                     <option value="den.1">Superligaen</option>
                     </select>
                     </form>
@@ -54,9 +54,7 @@
                 <button class="btn btn-outline-primary" onclick="changeDate(1)">
                     Next <i class="fas fa-chevron-right"></i>
                 </button>
-                <button class="btn btn-primary" onclick="loadMatches()">
-                    <i class="fas fa-sync-alt"></i> Load Matches
-                </button>
+
             </div>
         </div>
 
@@ -77,7 +75,7 @@
                 <div class="modal-content">
                     <div class="modal-header bg-dark text-white">
                         <h5 class="modal-title" id="matchDetailsTitle">
-                            <i class="fas fa-futbol me-2"></i>Match Details
+                            Match Details
                         </h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
@@ -112,7 +110,7 @@
 
     <footer class="footer bg-dark text-white text-center py-3 mt-5">
         <p class="mb-0">
-            <i class="fas fa-code me-2"></i>Football Summarizer | Powered by ESPN API, OpenAI, Niko da glizzy gobler & fadervor tivie
+            Football Summarizer | Powered by ESPN API and OpenAI
         </p>
     </footer>
 </body>
