@@ -1,4 +1,4 @@
-package com.example.chatgptjokes.service;
+package com.example.footballsummarizer.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +12,6 @@ public class ESPNService {
     private final ObjectMapper objectMapper;
 
     private static final String ESPN_API_BASE = "http://site.api.espn.com/apis/site/v2/sports/soccer";
-    private static final String DEFAULT_LEAGUE = "eng.1"; // Premier League
 
     public ESPNService() {
         this.webClient = WebClient.builder()
@@ -24,9 +23,7 @@ public class ESPNService {
     }
 
     public JsonNode fetchScoreboard(String date, String league) {
-        if (league == null || league.isEmpty()) {
-            league = DEFAULT_LEAGUE;
-        }
+
         String url = ESPN_API_BASE + "/" + league + "/scoreboard?dates=" + date;
 
         try {
@@ -43,9 +40,7 @@ public class ESPNService {
     }
 
     public JsonNode fetchMatchSummary(String fixtureId, String league) {
-        if (league == null || league.isEmpty()) {
-            league = DEFAULT_LEAGUE;
-        }
+
         String url = ESPN_API_BASE + "/" + league + "/summary?event=" + fixtureId;
 
         try {

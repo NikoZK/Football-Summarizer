@@ -1,10 +1,8 @@
-package com.example.chatgptjokes.service;
+package com.example.footballsummarizer.service;
 
-import com.example.chatgptjokes.dtos.MatchSummaryResponse;
-import com.example.chatgptjokes.dtos.MyResponse;
+import com.example.footballsummarizer.dtos.MatchSummaryResponse;
+import com.example.footballsummarizer.dtos.MyResponse;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class AIService {
@@ -43,8 +41,8 @@ public class AIService {
             return aiResponse.getAnswer();
 
         } catch (Exception e) {
-            System.err.println("⚠️  AI summary generation failed: " + e.getMessage());
-            // fallback
+            System.err.println("AI summary generation failed: " + e.getMessage());
+
             return String.format(
                     "%s faced %s in a match that ended %s. Possession: %.1f%% vs %.1f%%, shots on target: %d vs %d, xG: %.2f vs %.2f. " +
                             "Defensive efforts: Tackles %d vs %d, Interceptions %d vs %d, Saves %d vs %d. " +
@@ -60,8 +58,6 @@ public class AIService {
         }
     }
 
-
-
     public String generateBasicMatchSummary(String homeTeam, String awayTeam, String score) {
         try {
             String prompt = String.format(
@@ -72,7 +68,7 @@ public class AIService {
             MyResponse aiResponse = openAiService.makeRequest(prompt, "You are a football commentator.");
             return aiResponse.getAnswer();
         } catch (Exception e) {
-            System.err.println("⚠️  AI summary generation failed: " + e.getMessage());
+            System.err.println("AI summary generation failed: " + e.getMessage());
             return String.format(
                     "%s faced %s in a match that ended %s.",
                     homeTeam, awayTeam, score
@@ -105,7 +101,7 @@ public class AIService {
             return aiResponse.getAnswer();
 
         } catch (Exception e) {
-            System.err.println("⚠️  AI prediction generation failed: " + e.getMessage());
+            System.err.println("AI prediction generation failed: " + e.getMessage());
             return String.format(
                     "This promises to be an exciting match between %s and %s at %s. " +
                             "Both sides will aim to capitalize on recent form.",

@@ -1,4 +1,4 @@
-package com.example.chatgptjokes.service;
+package com.example.footballsummarizer.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Service;

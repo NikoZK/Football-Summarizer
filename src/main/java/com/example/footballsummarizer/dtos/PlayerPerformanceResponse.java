@@ -1,4 +1,4 @@
-package com.example.chatgptjokes.dtos;
+package com.example.footballsummarizer.dtos;
 
 import lombok.Data;
 import java.util.List;

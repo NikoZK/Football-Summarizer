@@ -1,4 +1,4 @@
-package com.example.chatgptjokes.dtos;
+package com.example.footballsummarizer.dtos;
 
 import java.util.ArrayList;
 import java.util.List;

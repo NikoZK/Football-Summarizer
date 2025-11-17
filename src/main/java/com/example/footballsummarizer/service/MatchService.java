@@ -1,6 +1,6 @@
-package com.example.chatgptjokes.service;
+package com.example.footballsummarizer.service;
 
-import com.example.chatgptjokes.dtos.MatchSummaryResponse;
+import com.example.footballsummarizer.dtos.MatchSummaryResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +32,7 @@ public class MatchService {
         this.aiService = aiService;
         this.xgService = xgService;
     }
+
     public Map<String, Object> getMatches(String date, String league) {
         if (date == null || date.isEmpty()) {
             date = LocalDate.now().minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE);
@@ -40,6 +41,7 @@ public class MatchService {
         String dateParam = date.replace("-", "");
         JsonNode root = espnService.fetchScoreboard(dateParam, league);
         JsonNode events = root.path("events");
+        System.out.println(events.toPrettyString());
 
         List<Map<String, Object>> matches = new ArrayList<>();
         for (JsonNode event : events) {
@@ -51,6 +53,7 @@ public class MatchService {
 
             String status = event.path("status").path("type").path("completed").asBoolean() ? "FT" :
                     event.path("status").path("type").path("state").asText().equals("in") ? "LIVE" : "NS";
+
             match.put("status", status);
 
             JsonNode competitions = event.path("competitions").get(0);
@@ -222,17 +225,17 @@ public class MatchService {
         stats.setInterceptionsHome(espnService.extractStatInt(homeTeamNode, "interceptions"));
         stats.setInterceptionsAway(espnService.extractStatInt(awayTeamNode, "interceptions"));
 
-        // Gule / røde kort
+        // Yellow / Red card
         stats.setYellowCardsHome(espnService.extractStatInt(homeTeamNode, "yellowCards"));
         stats.setYellowCardsAway(espnService.extractStatInt(awayTeamNode, "yellowCards"));
         stats.setRedCardsHome(espnService.extractStatInt(homeTeamNode, "redCards"));
         stats.setRedCardsAway(espnService.extractStatInt(awayTeamNode, "redCards"));
 
-        // Hjørnespark – "wonCorners"
+        // Corners – "wonCorners"
         stats.setCornersHome(espnService.extractStatInt(homeTeamNode, "wonCorners"));
         stats.setCornersAway(espnService.extractStatInt(awayTeamNode, "wonCorners"));
 
-        // xG (som du allerede bruger din egen service til)
+        // xG - "expectedGoals"
         stats.setExpectedGoalsHome(xgService.calculateEstimatedXG(homeTeamNode));
         stats.setExpectedGoalsAway(xgService.calculateEstimatedXG(awayTeamNode));
 

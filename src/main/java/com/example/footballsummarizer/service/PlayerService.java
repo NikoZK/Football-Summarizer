@@ -1,6 +1,6 @@
-package com.example.chatgptjokes.service;
+package com.example.footballsummarizer.service;
 
-import com.example.chatgptjokes.dtos.PlayerPerformanceResponse;
+import com.example.footballsummarizer.dtos.PlayerPerformanceResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Service;
 
