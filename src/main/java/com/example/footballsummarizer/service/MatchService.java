@@ -41,7 +41,6 @@ public class MatchService {
         String dateParam = date.replace("-", "");
         JsonNode root = espnService.fetchScoreboard(dateParam, league);
         JsonNode events = root.path("events");
-        System.out.println(events.toPrettyString());
 
         List<Map<String, Object>> matches = new ArrayList<>();
         for (JsonNode event : events) {
