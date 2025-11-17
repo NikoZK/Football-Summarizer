@@ -12,7 +12,7 @@ public class ESPNService {
     private final ObjectMapper objectMapper;
 
     private static final String ESPN_API_BASE = "http://site.api.espn.com/apis/site/v2/sports/soccer";
-    private static final String DEFAULT_LEAGUE = "eng.1"; // English Premier League
+    private static final String DEFAULT_LEAGUE = "eng.1"; // Premier League
 
     public ESPNService() {
         this.webClient = WebClient.builder()

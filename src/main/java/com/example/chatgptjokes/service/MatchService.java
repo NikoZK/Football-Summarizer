@@ -12,6 +12,17 @@ import java.util.*;
 @Service
 public class MatchService {
 
+    public static final Map<String, String> LEAGUE_NAMES = Map.ofEntries(
+            Map.entry("eng.1", "Premier League"),
+            Map.entry("esp.1", "La Liga"),
+            Map.entry("ita.1", "Serie A"),
+            Map.entry("fra.1", "Ligue 1"),
+            Map.entry("ger.1", "Bundesliga"),
+            Map.entry("UEFA.CHAMPIONS", "Champions League"),
+            Map.entry("fifa.worldq.uefa", "World Cup Qualifiers"),
+            Map.entry("fifa.world", "World Cup"),
+            Map.entry("den.1", "Superligaen")
+    );
     private final ESPNService espnService;
     private final AIService aiService;
     private final XGService xgService;
@@ -64,7 +75,15 @@ public class MatchService {
                 match.put("awayScore", awayTeam.path("score").asInt(0));
             }
 
-            match.put("league", event.path("league").path("name").asText("Premier League"));
+            String leagueCode = league;
+
+            String leagueNameFromApi = event.path("league").path("name").asText(null);
+
+            String leagueDisplayName = leagueNameFromApi != null && !leagueNameFromApi.isBlank()
+                    ? leagueNameFromApi : LEAGUE_NAMES.getOrDefault(leagueCode, leagueCode);
+
+            match.put("league", leagueDisplayName);
+
             match.put("venue", competitions.path("venue").path("fullName").asText("TBD"));
             matches.add(match);
         }
@@ -74,6 +93,8 @@ public class MatchService {
         result.put("matches", matches);
         return result;
     }
+
+
 
     public MatchSummaryResponse getMatchSummary(String fixtureId, String league) {
         try {
@@ -375,7 +396,6 @@ public class MatchService {
         MatchSummaryResponse.TeamForm form = new MatchSummaryResponse.TeamForm();
 
         try {
-            // ✅ 1️⃣ Try ESPN’s actual recent form data first
             JsonNode formArray = root.path("boxscore").path("form");
             if (formArray.isArray()) {
                 for (JsonNode teamNode : formArray) {
@@ -402,7 +422,6 @@ public class MatchService {
                 }
             }
 
-            // ✅ 2️⃣ If form was found, we can still enrich with standings
             JsonNode teamStanding = standingsMap.get(teamName);
             if (teamStanding != null) {
                 JsonNode stats = teamStanding.path("stats");
@@ -415,7 +434,6 @@ public class MatchService {
                 }
             }
 
-            // ✅ 3️⃣ If ESPN form wasn’t found at all, set placeholder
             if (form.getLastFiveGames() == null || form.getLastFiveGames().isEmpty()) {
                 form.setLastFiveGames("N/A");
             }

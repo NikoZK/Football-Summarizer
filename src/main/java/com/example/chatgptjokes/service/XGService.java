@@ -21,21 +21,21 @@ public class XGService {
 
         int offTargetShots = Math.max(0, totalShots - shotsOnTarget - blockedShots);
 
-        // Base xG calculation
+        // Hovedformularen
         double xg = (shotsOnTarget * 0.32)
                 + (blockedShots * 0.08)
                 + (offTargetShots * 0.06);
 
-        // Diminishing returns for teams with lots of shots
+        // Reducering af xg hvis spammer skud
         if (totalShots > 15) {
             double correction = 1.0 - Math.min(0.3, (totalShots - 15) * 0.02);
             xg *= correction;
         }
 
-        // Soft scale down to keep xG realistic
+        // Reducer topenden med 0.85
         xg *= 0.85;
 
-        // Round to 2 decimals
+        // Afrund
         return Math.round(xg * 100.0) / 100.0;
     }
 
