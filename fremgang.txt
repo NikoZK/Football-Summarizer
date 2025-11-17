@@ -8,11 +8,9 @@ Venue fix 🥬🥬
 
 Tilføj flere ligaer 🥬🥬
 
-Flere relevante stats(total shots, saves, total tackles, effective tackles, interceptions, woncorners. = Implementeret dejligt, 🥬🥬kun css skal fixes.
+Flere relevante stats(total shots, saves, total tackles, effective tackles, interceptions, woncorners. = Implementeret dejligt, kun css skal fixes. 🥬🥬
 
 Tilføje standings/point/W/L til match preview 🥬🥬
-
-Fix ALT AI SLOP
 
 eventuel caching?
 

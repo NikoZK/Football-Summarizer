@@ -1,8 +1,8 @@
-package com.example.chatgptjokes.api;
+package com.example.footballsummarizer.restpointcontroller;
 
-import com.example.chatgptjokes.dtos.MatchSummaryResponse;
-import com.example.chatgptjokes.dtos.PlayerPerformanceResponse;
-import com.example.chatgptjokes.service.FootballService;
+import com.example.footballsummarizer.dtos.MatchSummaryResponse;
+import com.example.footballsummarizer.dtos.PlayerPerformanceResponse;
+import com.example.footballsummarizer.service.FootballService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;

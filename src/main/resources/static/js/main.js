@@ -3,16 +3,15 @@ const SERVER_URL = 'http://localhost:8080/api/v1/football/';
 let currentFixtureId = null;
 let matchDetailsModal = null;
 
-// Initialize on page load
+// Load efter index
 document.addEventListener('DOMContentLoaded', function() {
     matchDetailsModal = new bootstrap.Modal(document.getElementById('matchDetailsModal'));
 
-    // Set default date to yesterday
+    // Default er i går
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     document.getElementById('match-date').valueAsDate = yesterday;
 
-    // Load matches
     loadMatches();
 });
 
@@ -104,8 +103,6 @@ async function openMatchDetails(fixtureId) {
     currentFixtureId = fixtureId;
     matchDetailsModal.show();
 
-
-
     const summarySection = document.getElementById('match-summary-section');
     const performanceButtons = document.getElementById('performance-buttons');
     const performanceSection = document.getElementById('player-performance-section');
@@ -127,7 +124,7 @@ async function openMatchDetails(fixtureId) {
         const summary = await fetch(`${SERVER_URL}match/${fixtureId}/summary?league=${league}`).then(handleHttpErrors);
         displayMatchSummary(summary);
 
-        // Only show performance buttons for completed matches (must have statistics)
+        // Vis kun performance knapper hvis kamp spillet/statistikker findes
         console.log('Match details:', {
             isUpcoming: summary.isUpcoming,
             hasStatistics: !!summary.statistics,
@@ -151,6 +148,7 @@ async function openMatchDetails(fixtureId) {
         `;
     }
 }
+
 function displayMatchSummary(summary) {
     const summarySection = document.getElementById('match-summary-section');
 
@@ -200,10 +198,10 @@ function displayMatchSummary(summary) {
             </div>
         </div>
 
-        <!-- Stat groups -->
+        <!-- Stats -->
         <div class="statistics-grid">
 
-            <!-- Group 1: Attacking -->
+            <!-- Group 1: Attacking stats -->
             <div class="stat-group-wrapper attacking-group">
                 <div class="stat-group">
                     <h5 class="stat-group-title"><i class="fas fa-bullseye me-2"></i>Attacking</h5>
@@ -246,7 +244,7 @@ function displayMatchSummary(summary) {
                 </div>
             </div>
 
-            <!-- Group 2: Defensive -->
+            <!-- Group 2: Defensive stats -->
             <div class="stat-group-wrapper defensive-group">
                 <div class="stat-group">
                     <h5 class="stat-group-title"><i class="fas fa-shield-alt me-2"></i>Defensive</h5>
@@ -333,7 +331,7 @@ function displayMatchPreview(summary) {
         `<span class="badge bg-primary me-2 mb-2">${service}</span>`
     ).join('');
 
-    // Build team form display
+    // Team form
     let teamFormHtml = '';
     if (preview.homeForm && preview.awayForm) {
         const homeForm = preview.homeForm;
@@ -371,7 +369,7 @@ ${awayForm.wins !== null ? `<p">W: ${awayForm.wins} | D: ${awayForm.draws} | L: 
         `;
     }
 
-    // Build additional info
+    // Additional info
     let additionalInfoHtml = '';
     const hasAdditionalInfo = preview.referee || preview.attendance;
     if (hasAdditionalInfo) {
@@ -491,7 +489,7 @@ function displayPlayerPerformance(performance) {
             <h4><i class="fas ${iconClass} me-2"></i>${title}</h4>
             <p>
                 <i class="fas fa-info-circle me-1"></i>
-                Note: Player ratings are estimated based on starting lineup and position. 
+                Note: Player ratings are estimated based on starting lineup, stats and position. 
                 ESPN API does not provide official match ratings for soccer.
             </p>
         </div>

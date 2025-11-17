@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
-    <artifactId>chatgpt-jokes</artifactId>
+    <artifactId>football-summarizer</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>chatgpt-jokes</name>
-    <description>chatgpt-jokes</description>
+    <name>footballsummarizer</name>
+    <description>football-summarizer</description>
     <properties>
         <java.version>17</java.version>
     </properties>
