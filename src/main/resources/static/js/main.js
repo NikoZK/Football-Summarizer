@@ -1,4 +1,4 @@
-const SERVER_URL = 'http://localhost:8080/api/v1/football/';
+const SERVER_URL = /api/v1/football/';
 
 let currentFixtureId = null;
 let matchDetailsModal = null;
